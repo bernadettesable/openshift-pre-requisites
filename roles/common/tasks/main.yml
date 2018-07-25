@@ -1,0 +1,67 @@
+```
+- name: Install pre-requisite packages
+  yum:
+    name: "{{ item }}"    
+    state: present
+  with_items:
+    - vim
+    - tree
+    - wget
+    - git
+    - net-tools
+    - bind-utils
+    - yum-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - kexec-tools
+    - sos
+    - psacct
+    - ansible
+    - pyOpenSSL
+    - python-cryptography
+    - python-lxml
+    - NetworkManager
+
+- name: Enable and start NetworkManager service
+  systemd:
+    name: NetworkManager
+    enabled: yes
+    state: restarted
+
+- name: Install docker
+  yum:
+    name: docker
+    state: present
+
+- name: Configure docker
+  shell: sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --log-opt max-size=1M --log-opt max-file=3"' /etc/sysconfig/docker
+
+- name: Update all server packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: Configure docker-storage-setup 1/2
+  shell:
+  |
+  lvmconf --disable-cluster
+  rm -f /etc/sysconfig/docker-storage-setup
+
+- name: Configure docker-storage-setup 2/2
+  copy:
+    src: docker-storage-setup
+    dest: /etc/sysconfig/
+  remote_src: true
+
+- name: Setup docker-storage 1/2
+  shell:
+    |
+    rm -rf /var/lib/docker
+    docker-storage-setup
+
+- name: Enable and start docker service
+  systemd:
+    name: docker
+    enabled: yes
+    state: restarted

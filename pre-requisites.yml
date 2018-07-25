@@ -1,0 +1,6 @@
+---
+- hosts: openshift
+  roles:
+    - common
+  become: true
+  become_user: root

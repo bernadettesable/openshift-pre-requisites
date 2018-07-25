@@ -1,0 +1,11 @@
+[master]
+13.229.98.66
+13.250.102.12
+
+[nodes]
+13.229.134.138
+52.221.184.43
+
+[openshift:children]
+master
+nodes

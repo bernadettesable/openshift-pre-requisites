@@ -1,0 +1,6 @@
+---
+- hosts: master
+  roles:
+    - master
+  become: true
+  become_user: root
